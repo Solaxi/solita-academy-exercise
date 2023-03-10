@@ -18,7 +18,24 @@ Java:         19
 Dependencies: Spring Web, Spring Data JPA, H2 Database
 ```
 
+## Database
+
+Developed with a local MonboDB instance.
+
+Currently db setting defined in MongoConfig.java as:
+```
+mongodb://localhost:27017/bikeapp
+```
+
 ## Running the service
 ```
 $ mvn clean spring-boot:run
+```
+
+## Mappings
+
+Runs at http://localhost:8080
+
+```
+GET /journeys  lists all journeys
 ```

@@ -1,10 +1,8 @@
 package us.solax.bikeapp;
 
-import java.util.Date;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import java.time.LocalDateTime;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * One CSV entry from 
@@ -22,12 +20,13 @@ import jakarta.persistence.Id;
  * Duration (sec.)          500
  */
 
-@Entity
+@Document
 public class Journey {
   
-  private @Id @GeneratedValue Long id;
-  private Date departureTime;
-  private Date returnTime;
+  @Id
+  private String id;
+  private LocalDateTime departureTime;
+  private LocalDateTime returnTime;
   private String departureStationId;
   private String departureStationName;
   private String returnStationId;
@@ -39,8 +38,8 @@ public class Journey {
   }
 
   public Journey(
-    Date departureTime,
-    Date returnTime,
+    LocalDateTime departureTime,
+    LocalDateTime returnTime,
     String departureStationId,
     String departureStationName,
     String returnStationId,
@@ -58,19 +57,27 @@ public class Journey {
     this.duration = duration;
   }
 
-  public Date getDepartureTime() {
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public LocalDateTime getDepartureTime() {
     return departureTime;
   }
 
-  public void setDepartureTime(Date departureTime) {
+  public void setDepartureTime(LocalDateTime departureTime) {
     this.departureTime = departureTime;
   }
 
-  public Date getReturnTime() {
+  public LocalDateTime getReturnTime() {
     return returnTime;
   }
 
-  public void setReturnTime(Date returnTime) {
+  public void setReturnTime(LocalDateTime returnTime) {
     this.returnTime = returnTime;
   }
 
