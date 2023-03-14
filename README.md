@@ -27,6 +27,13 @@ Currently db setting defined in MongoConfig.java as:
 mongodb://localhost:27017/bikeapp
 ```
 
+## Reading CSV into DB. 
+
+us.solax.bikeapp.db.ReadCsvToDb.java is used to read CSV-files and import the data into database.
+```
+$  mvn clean spring-boot:run "-Dspring-boot.run.arguments=--csv=http://link-to-csv.csv"
+```
+
 ## Running the service
 ```
 $ mvn clean spring-boot:run
@@ -37,5 +44,6 @@ $ mvn clean spring-boot:run
 Runs at http://localhost:8080
 
 ```
-GET /journeys  lists all journeys
+GET /api/journeys  lists all journeys
+GET /api/stations  lists all stations
 ```
