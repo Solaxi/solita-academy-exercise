@@ -188,8 +188,13 @@ public class ReadCsvToDb implements CommandLineRunner {
           continue;
         }
 
-        LocalDateTime departureTime = LocalDateTime.parse(entry[0], FORMATTER);
-        LocalDateTime returnTime = LocalDateTime.parse(entry[1], FORMATTER);
+        LocalDateTime departureTime = getTime(entry[0]);
+        LocalDateTime returnTime = getTime(entry[1]);
+        if (departureTime == null || returnTime == null) {
+          invalidJourneyCounter++;
+          continue;
+        }
+
         int departureStationId = getInt(entry[2]);
         int returnStationId = getInt(entry[4]);
         int distance = getInt(entry[6]);
@@ -238,12 +243,20 @@ public class ReadCsvToDb implements CommandLineRunner {
     }
   }
 
+  //Ignore errors for ints
   private int getInt(String arg) {
-    int i = -1;
     try {
-      i = Integer.parseInt(arg);
+      return Integer.parseInt(arg);
     } catch (Exception e) {}
-    return i;
+    return -1;
+  }
+
+  //Ignore errors for dates
+  private LocalDateTime getTime(String arg) {
+    try {
+      return LocalDateTime.parse(arg, FORMATTER);
+    } catch (Exception e) {}
+    return null;
   }
 
   //Find station
