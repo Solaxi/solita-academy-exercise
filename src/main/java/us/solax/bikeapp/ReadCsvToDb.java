@@ -110,7 +110,7 @@ public class ReadCsvToDb implements CommandLineRunner {
         }
 
         //Check for duplicates
-        int stationId = Integer.parseInt(entry[1]);
+        int stationId = getInt(entry[1]);
         if (stationRep.findByStationId(stationId) != null) {
           invalidStationCounter++;
           continue;
@@ -126,7 +126,7 @@ public class ReadCsvToDb implements CommandLineRunner {
         city.put(Lang.FI, entry[7].trim());
         city.put(Lang.SE, entry[8].trim());
         String operator = entry[9].trim();
-        int capacity = Integer.parseInt(entry[10]);
+        int capacity = getInt(entry[10]);
         String x = entry[11].trim();
         String y = entry[12].trim();
 
@@ -190,10 +190,10 @@ public class ReadCsvToDb implements CommandLineRunner {
 
         LocalDateTime departureTime = LocalDateTime.parse(entry[0], FORMATTER);
         LocalDateTime returnTime = LocalDateTime.parse(entry[1], FORMATTER);
-        int departureStationId = Integer.parseInt(entry[2]);
-        int returnStationId = Integer.parseInt(entry[4]);
-        int distance = Double.valueOf(entry[6]).intValue();
-        int duration = Integer.parseInt(entry[7]);
+        int departureStationId = getInt(entry[2]);
+        int returnStationId = getInt(entry[4]);
+        int distance = getInt(entry[6]);
+        int duration = getInt(entry[7]);
 
         //Validate journey time (must be more than 10 sec)
         if (duration < 10) {
@@ -219,7 +219,7 @@ public class ReadCsvToDb implements CommandLineRunner {
         journeyRep.save(new Journey(departureTime, returnTime, departureStation, returnStation, distance, duration));
 
         journeyCounter++;
-        if (journeyCounter % 500 == 0) {
+        if (journeyCounter % 1000 == 0) {
           log.info("Added " + journeyCounter + " journeys...");
         }
       }
@@ -236,6 +236,14 @@ public class ReadCsvToDb implements CommandLineRunner {
     } finally {
       scan.close();
     }
+  }
+
+  private int getInt(String arg) {
+    int i = -1;
+    try {
+      i = Integer.parseInt(arg);
+    } catch (Exception e) {}
+    return i;
   }
 
   //Find station
