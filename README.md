@@ -31,8 +31,8 @@ mongodb://localhost:27017/bikeapp
 
 us.solax.bikeapp.db.ReadCsvToDb.java is used to read CSV-files and import the data into database.
 ```
-$  mvn spring-boot:run "-Dspring-boot.run.arguments=csv.stations=http://link-to-stations-csv.csv"
-$  mvn spring-boot:run "-Dspring-boot.run.arguments=csv.journeys=http://link-to-journeys-csv.csv"
+$  mvn spring-boot:run "-Dspring-boot.run.arguments=csv.stations=C:\path_to\csvfile.csv"
+$  mvn spring-boot:run "-Dspring-boot.run.arguments=csv.journeys=C:\path_to\csvfile.csv"
 ```
 
 ## Running the service

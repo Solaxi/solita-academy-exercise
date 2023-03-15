@@ -1,6 +1,7 @@
 package us.solax.bikeapp;
 
-import java.net.URL;
+import java.io.File;
+import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -41,8 +42,6 @@ public class ReadCsvToDb implements CommandLineRunner {
   @Autowired
   private StationRepository stationRep;
 
-  private List<Station> allStations = null;
-
   /*
    * Starts the ReadCsvToDb Bean as a CommandLineRunner
    * and checks if the application was started providing
@@ -61,6 +60,10 @@ public class ReadCsvToDb implements CommandLineRunner {
     }
   }
 
+  /*
+   * Remove key and = from command line parameter.
+   * csv.stations=[csv] leaves just [csv]
+   */
   private static String parseArg(String[] args, String argToFind) {
     for (String arg : args) {
       if (arg.contains(argToFind)) {
@@ -79,7 +82,7 @@ public class ReadCsvToDb implements CommandLineRunner {
    *
    * @param csv URL to csv to read from
    */
-  public void readStationsToDatabase(String csv) {
+  private void readStationsToDatabase(String csv) {
     log.info("Reading stations CSV from " + csv);
    
     int stationCounter = 0;
@@ -87,8 +90,14 @@ public class ReadCsvToDb implements CommandLineRunner {
 
     Scanner scan = null;
     String[] entry = null;
+    
+    if (!new File(csv).exists()) {
+      log.error("File doesn't exist: " + csv);
+      return;
+    }
+
     try {
-      scan = new Scanner( new URL(csv).openStream());
+      scan = new Scanner(new FileInputStream(new File(csv)));
       scan.nextLine(); // skip the first line
 
       while (scan.hasNextLine()) {
@@ -101,8 +110,8 @@ public class ReadCsvToDb implements CommandLineRunner {
         }
 
         //Check for duplicates
-        String stationId = entry[1].trim();
-        if (findStation(stationId) != null) {
+        int stationId = Integer.parseInt(entry[1]);
+        if (stationRep.findByStationId(stationId) != null) {
           invalidStationCounter++;
           continue;
         }
@@ -122,8 +131,11 @@ public class ReadCsvToDb implements CommandLineRunner {
         String y = entry[12].trim();
 
         stationRep.save(new Station(stationId, name, address, city, operator, capacity, x, y));
+        
         stationCounter++;
-          
+        if (stationCounter % 100 == 0) {
+          log.info("Added " + stationCounter + " stations...");
+        }
       }
 
       log.info("Added " + stationCounter + " stations, skipped " + invalidStationCounter + " stations");
@@ -145,20 +157,26 @@ public class ReadCsvToDb implements CommandLineRunner {
    *
    * @param csv URL to csv to read from
    */
-  public void readJourneysToDatabase(String csv) {
+  private void readJourneysToDatabase(String csv) {
     log.info("Reading Journeys CSV from " + csv);
-   
+    
+    if (!new File(csv).exists()) {
+      log.error("File doesn't exist: " + csv);
+      return;
+    }
+
     int journeyCounter = 0;
     int invalidJourneyCounter = 0;
     int invalidJourneyTimeCounter = 0;
     int invalidJourneyLengthCounter = 0;
     int invalidJourneyStationCounter = 0;
-    int invalidJourneyDuplicateCounter = 0;
 
     Scanner scan = null; 
     String[] entry = null;
     try {
-      scan = new Scanner(new URL(csv).openStream());
+      List<Station> allStations = stationRep.findAll();
+
+      scan = new Scanner(new FileInputStream(new File(csv)));
       scan.nextLine(); // skip the first line
 
       while (scan.hasNextLine()) {
@@ -172,10 +190,10 @@ public class ReadCsvToDb implements CommandLineRunner {
 
         LocalDateTime departureTime = LocalDateTime.parse(entry[0], FORMATTER);
         LocalDateTime returnTime = LocalDateTime.parse(entry[1], FORMATTER);
-        String departureStationId = entry[2];
-        String returnStationId = entry[4];
+        int departureStationId = Integer.parseInt(entry[2]);
+        int returnStationId = Integer.parseInt(entry[4]);
         int distance = Double.valueOf(entry[6]).intValue();
-        int duration = Integer.valueOf(entry[7]);
+        int duration = Integer.parseInt(entry[7]);
 
         //Validate journey time (must be more than 10 sec)
         if (duration < 10) {
@@ -189,15 +207,8 @@ public class ReadCsvToDb implements CommandLineRunner {
           continue;
         }
 
-        //Validate if added already
-        Journey existingJourney = findJourney(departureTime, returnTime);
-        if (existingJourney != null) {
-          invalidJourneyDuplicateCounter++;
-          continue;
-        }
-
-        Station departureStation = findStation(departureStationId);
-        Station returnStation = findStation(returnStationId);
+        Station departureStation = findStation(departureStationId, allStations);
+        Station returnStation = findStation(returnStationId, allStations);
 
         //Validate journey stations (both need to exist)
         if (departureStation == null || returnStation == null) {
@@ -205,19 +216,19 @@ public class ReadCsvToDb implements CommandLineRunner {
           continue;
         }
 
-        Journey newJourney = journeyRep.save(new Journey(departureTime, returnTime, departureStation, returnStation, distance, duration));
-        addJourneyToStation(newJourney, departureStation);
-        addJourneyToStation(newJourney, returnStation);
+        journeyRep.save(new Journey(departureTime, returnTime, departureStation, returnStation, distance, duration));
 
         journeyCounter++;
+        if (journeyCounter % 500 == 0) {
+          log.info("Added " + journeyCounter + " journeys...");
+        }
       }
 
       log.info("Added " + journeyCounter + " journeys"
         + ", invalids: " + invalidJourneyCounter
         + ", invalidTimes: " + invalidJourneyTimeCounter
         + ", invalidLengths: " + invalidJourneyLengthCounter
-        + ", invalidStations: " + invalidJourneyStationCounter
-        + ", duplicates: " + invalidJourneyDuplicateCounter);
+        + ", invalidStations: " + invalidJourneyStationCounter);
     }
     catch (Exception e) {
       log.error("Failed reading csv from " + csv, e);
@@ -227,29 +238,13 @@ public class ReadCsvToDb implements CommandLineRunner {
     }
   }
 
-  //Append journey document to station and save it
-  private void addJourneyToStation(Journey newJourney, Station station) {
-    station.appendJourney(newJourney);
-    stationRep.save(station);
-  }
-
   //Find station
-  private Station findStation(String stationId) {
-    if (allStations == null) {
-      allStations = stationRep.findAll();
-    }
-    
+  private Station findStation(int stationId, List<Station> allStations) {
     for (Station station : allStations) {
-      if (station.getStationId().equals(stationId)) {
+      if (station.getStationId() == stationId) {
         return station;
       }
     }
-
     return null;
-  }
-
-  //Find journey
-  private Journey findJourney(LocalDateTime departureTime, LocalDateTime returnTime) {
-    return journeyRep.findByTimes(departureTime, returnTime);
   }
 }
