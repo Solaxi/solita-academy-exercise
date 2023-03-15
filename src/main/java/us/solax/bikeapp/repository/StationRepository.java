@@ -9,6 +9,6 @@ import us.solax.bikeapp.model.Station;
 @Repository
 public interface StationRepository extends MongoRepository<Station, String> {
   
-  @Query("{ 'stationId' : ?0, 'stationName' : ?1 }")
-  Station findByIdAndName(String stationId, String stationName);
+  @Query("{ 'stationId' : ?0 }")
+  Station findByStationId(String stationId);
 }

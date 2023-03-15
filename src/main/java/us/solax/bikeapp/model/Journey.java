@@ -30,8 +30,8 @@ public class Journey {
   private Station departureStation;
   @DBRef
   private Station returnStation;
-  private Integer distance;
-  private Integer duration;
+  private int distance;
+  private int duration;
 
   public Journey() {
   }
@@ -41,8 +41,8 @@ public class Journey {
     LocalDateTime returnTime,
     Station departureStation,
     Station returnStation,
-    Integer distance,
-    Integer duration
+    int distance,
+    int duration
   ) {
     this.departureTime = departureTime;
     this.returnTime = returnTime;
@@ -92,19 +92,19 @@ public class Journey {
     this.returnStation = returnStation;
   }
 
-  public Integer getDistance() {
+  public int getDistance() {
     return distance;
   }
 
-  public void setDistance(Integer distance) {
+  public void setDistance(int distance) {
     this.distance = distance;
   }
   
-  public Integer getDuration() {
+  public int getDuration() {
     return duration;
   }
 
-  public void setDuration(Integer duration) {
+  public void setDuration(int duration) {
     this.duration = duration;
   }
 }
