@@ -1,14 +1,9 @@
 package us.solax.bikeapp.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * One CSV Station entry from 
@@ -42,10 +37,6 @@ public class Station {
   private int capacity;
   private String x;
   private String y;
-
-  @DBRef
-  @JsonIgnore
-  private List<Journey> journeys = new ArrayList<Journey>();
 
   public Station() {}
 
@@ -140,16 +131,5 @@ public class Station {
   public void setY(String y) {
     this.y = y;
   }
-  
-  public List<Journey> getJourneys() {
-    return journeys;
-  }
 
-  public void setJourneys(List<Journey> journeys) {
-    this.journeys = journeys;
-  }
-
-  public void appendJourney(Journey journey) {
-    journeys.add(journey);
-  }
 }
