@@ -29,7 +29,7 @@ public class Station {
   
   @Id
   private String id;
-  private String stationId;
+  private int stationId;
   private Map<Lang, String> name;
   private Map<Lang, String> address;
   private Map<Lang, String> city;
@@ -41,7 +41,7 @@ public class Station {
   public Station() {}
 
   public Station(
-    String stationId, 
+    int stationId, 
     Map<Lang, String> name,
     Map<Lang, String> address,
     Map<Lang, String> city,
@@ -68,11 +68,11 @@ public class Station {
     this.id = id;
   }
 
-  public String getStationId() {
+  public int getStationId() {
     return stationId;
   }
 
-  public void setStationId(String stationId) {
+  public void setStationId(int stationId) {
     this.stationId = stationId;
   }
 

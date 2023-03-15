@@ -10,5 +10,5 @@ import us.solax.bikeapp.model.Station;
 public interface StationRepository extends MongoRepository<Station, String> {
   
   @Query("{ 'stationId' : ?0 }")
-  Station findByStationId(String stationId);
+  Station findByStationId(int stationId);
 }
