@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import us.solax.bikeapp.model.Journey;
-import us.solax.bikeapp.model.Lang;
 import us.solax.bikeapp.model.Station;
 import us.solax.bikeapp.repository.JourneyRepository;
 import us.solax.bikeapp.repository.StationRepository;
@@ -116,15 +113,9 @@ public class ReadCsvToDb implements CommandLineRunner {
           continue;
         }
 
-        Map<Lang, String> name = new HashMap<Lang, String>();
-        name.put(Lang.FI, entry[2].trim());
-        name.put(Lang.SE, entry[3].trim());
-        Map<Lang, String> address = new HashMap<Lang, String>();
-        address.put(Lang.FI, entry[5].trim());
-        address.put(Lang.SE, entry[6].trim());
-        Map<Lang, String> city = new HashMap<Lang, String>();
-        city.put(Lang.FI, entry[7].trim());
-        city.put(Lang.SE, entry[8].trim());
+        String name = entry[2].trim();
+        String address = entry[5].trim();
+        String city = entry[7].trim();
         String operator = entry[9].trim();
         int capacity = getInt(entry[10]);
         String x = entry[11].trim();

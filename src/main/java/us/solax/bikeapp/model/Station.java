@@ -30,9 +30,9 @@ public class Station {
   @Id
   private String id;
   private int stationId;
-  private Map<Lang, String> name;
-  private Map<Lang, String> address;
-  private Map<Lang, String> city;
+  private String name;
+  private String address;
+  private String city;
   private String operator;
   private int capacity;
   private String x;
@@ -42,9 +42,9 @@ public class Station {
 
   public Station(
     int stationId, 
-    Map<Lang, String> name,
-    Map<Lang, String> address,
-    Map<Lang, String> city,
+    String name,
+    String address,
+    String city,
     String operator,
     int capacity,
     String x,
@@ -76,27 +76,27 @@ public class Station {
     this.stationId = stationId;
   }
 
-  public Map<Lang, String> getName() {
+  public String getName() {
     return name;
   }
 
-  public void setName(Map<Lang, String> name) {
+  public void setName(String name) {
     this.name = name;
   }
   
-  public Map<Lang, String> getAddress() {
+  public String getAddress() {
     return address;
   }
 
-  public void setAddress(Map<Lang, String> address) {
+  public void setAddress(String address) {
     this.address = address;
   }
 
-  public Map<Lang, String> getCity() {
+  public String getCity() {
     return city;
   }
 
-  public void setCity(Map<Lang, String> city) {
+  public void setCity(String city) {
     this.city = city;
   }
 
