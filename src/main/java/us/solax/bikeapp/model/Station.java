@@ -5,6 +5,9 @@ import java.util.Map;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * One CSV Station entry from 
  * https://opendata.arcgis.com/datasets/726277c507ef4914b0aec3cbcfcbfafc_0.csv
@@ -25,18 +28,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * y            60.16582
  */
 @Document
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Station {
   
   @Id
   private String id;
-  private int stationId;
-  private String name;
-  private String address;
-  private String city;
-  private String operator;
-  private int capacity;
-  private String x;
-  private String y;
+  @JsonProperty("ID") private int stationId;
+  @JsonProperty("Nimi") private String name;
+  @JsonProperty("Osoite") private String address;
+  @JsonProperty("Kaupunki") private String city;
+  @JsonProperty("Operaattor") private String operator;
+  @JsonProperty("Kapasiteet") private int capacity;
+  @JsonProperty("x") private String x;
+  @JsonProperty("y") private String y;
 
   public Station() {}
 
