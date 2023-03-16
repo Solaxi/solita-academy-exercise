@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import us.solax.bikeapp.csv.StationCsvReader;
 import us.solax.bikeapp.model.Journey;
 import us.solax.bikeapp.model.Station;
 import us.solax.bikeapp.repository.JourneyRepository;
@@ -85,43 +87,21 @@ public class ReadCsvToDb implements CommandLineRunner {
     int stationCounter = 0;
     int invalidStationCounter = 0;
 
-    Scanner scan = null;
-    String[] entry = null;
-    
-    if (!new File(csv).exists()) {
-      log.error("File doesn't exist: " + csv);
-      return;
-    }
-
+    StationCsvReader reader = null;
+    Station station = null;
     try {
-      scan = new Scanner(new FileInputStream(new File(csv)));
-      scan.nextLine(); // skip the first line
+      reader = new StationCsvReader(csv);
 
-      while (scan.hasNextLine()) {
-        entry = scan.nextLine().split(DELIMITER);
-
-        //Validate data set count
-        if (entry.length != 13) {
-          invalidStationCounter++;
-          continue;
-        }
+      while (reader.hasNext()) {
+        station = reader.next();
 
         //Check for duplicates
-        int stationId = getInt(entry[1]);
-        if (stationRep.findByStationId(stationId) != null) {
+        if (stationRep.findByStationId(station.getStationId()) != null) {
           invalidStationCounter++;
           continue;
         }
 
-        String name = entry[2].trim();
-        String address = entry[5].trim();
-        String city = entry[7].trim();
-        String operator = entry[9].trim();
-        int capacity = getInt(entry[10]);
-        String x = entry[11].trim();
-        String y = entry[12].trim();
-
-        stationRep.save(new Station(stationId, name, address, city, operator, capacity, x, y));
+        stationRep.save(station);
         
         stationCounter++;
         if (stationCounter % 100 == 0) {
@@ -132,10 +112,9 @@ public class ReadCsvToDb implements CommandLineRunner {
       log.info("Added " + stationCounter + " stations, skipped " + invalidStationCounter + " stations");
     }
     catch (Exception e) {
-      log.error("Failed reading csv from " + csv, e);
-      log.error("Failed line: " + Arrays.toString(entry));
+      log.error("Failed station: " + station, e);
     } finally {
-      scan.close();
+      reader.close();
     }
   }
 

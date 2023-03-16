@@ -57,7 +57,9 @@ public class StationCsvReader {
     return stationIter.next();
   }
 
-  public void close() throws IOException {
-    stationIter.close();
+  public void close() {
+    try {
+      stationIter.close();
+    } catch (Exception e) {}
   }
 }
